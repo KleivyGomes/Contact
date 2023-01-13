@@ -121,6 +121,14 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         return intent;
     }
 
+    public Intent sendMessage(int position){
+        Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+        smsIntent.setType("vnd.android-dir/mms-sms");
+        smsIntent.putExtra("address", myListData.get(position).getPhone());
+        smsIntent.putExtra("sms_body","");
+        return smsIntent;
+    }
+
     //show a message
     public void displayToast(String message) {
         Toast.makeText(context.getApplicationContext(), message,

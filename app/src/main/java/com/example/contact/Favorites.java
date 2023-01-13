@@ -88,7 +88,9 @@ public class Favorites extends AppCompatActivity {
                 startActivity(call);
                 return true;
             case 123:
-                displayToast("SENDING ....");
+                Intent message = myAdapter.sendMessage(item.getGroupId());
+                startActivity(message);
+                displayToast("SENDING SMS ....");
                 return true;
             case 124:
                 builder = new AlertDialog.Builder(this);

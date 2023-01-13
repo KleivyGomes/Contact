@@ -100,7 +100,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(call);
                 return true;
             case 123:
-                displayToast("SENDING ....");
+                Intent message = myAdapter.sendMessage(item.getGroupId());
+                startActivity(message);
+                displayToast("SENDING SMS ....");
                 return true;
             case 124:
                 displayToast("ADDED TO FAVORITE");
@@ -128,7 +130,8 @@ public class MainActivity extends AppCompatActivity {
                         .show();
                 return true;
             case 126:
-                displayToast("SHARING ....");
+                Intent shareIntent = myAdapter.sendContact(item.getGroupId());
+                startActivity(shareIntent);
                 return true;
             default:
                 return super.onContextItemSelected(item);

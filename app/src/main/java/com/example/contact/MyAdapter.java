@@ -27,7 +27,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     ArrayList<String> menuContext;
 
     //constructor
-    public MyAdapter(Context context, ArrayList<MyListData> myListData,ArrayList<String> menu) {
+    public MyAdapter(Context context, ArrayList<MyListData> myListData, ArrayList<String> menu) {
         this.context = context;
         this.myListData = myListData;
         this.menuContext = menu;
@@ -71,7 +71,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         });
     }
 
-    public void changeFavoriteStatus(@NonNull MyAdapter.ViewHolder holder){
+    public void changeFavoriteStatus(@NonNull MyAdapter.ViewHolder holder) {
         if (myListData.get(holder.getAdapterPosition()).getFavorito()) {
             myListData.get(holder.getAdapterPosition()).setFavorito(false);
             holder.favorite.setImageResource(R.drawable.ic_baseline_star_outline_24);
@@ -106,12 +106,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
 
 
-
         //Create a menu item
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-            for(int i=0;i<menuContext.size();i++){
-                contextMenu.add(this.getAdapterPosition(), 122+i, i,menuContext.get(i));
+            for (int i = 0; i < menuContext.size(); i++) {
+                contextMenu.add(this.getAdapterPosition(), 122 + i, i, menuContext.get(i));
             }
         }
 
@@ -119,9 +118,33 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     //call the contact
     public Intent callContact(int position) {
-        Uri uri = Uri.parse("tel:" + myListData.get(position).getPhone().toString());
+        Uri uri = Uri.parse("tel:" + myListData.get(position).getPhone());
         Intent intent = new Intent(Intent.ACTION_DIAL, uri);
         return intent;
+    }
+
+    public Intent sendMessage(int position){
+        Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+        smsIntent.setType("vnd.android-dir/mms-sms");
+        smsIntent.putExtra("address", myListData.get(position).getPhone());
+        smsIntent.putExtra("sms_body","");
+        return smsIntent;
+    }
+
+    public Intent sendContact(int position) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT,
+                "Name: " + myListData.get(position).getName() + "\n" +
+                        "Email: " + myListData.get(position).getEmail() + "\n" +
+                        "Phone: " + myListData.get(position).getPhone() + "\n" +
+                        "Sex: " + myListData.get(position).getSex() + "\n" +
+                        "Birthday: " + myListData.get(position).getDay() + "/" +
+                        myListData.get(position).getMonth() + "/" +
+                        myListData.get(position).getYear());
+        sendIntent.setType("text/plain");
+        Intent shareIntent = Intent.createChooser(sendIntent, "CONTACT");
+        return shareIntent;
     }
 
     //show a message
