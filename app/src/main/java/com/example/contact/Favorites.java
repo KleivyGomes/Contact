@@ -18,36 +18,41 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class Favorites extends AppCompatActivity {
-    public static ArrayList<MyListData> favoriteList;
+    ArrayList<MyListData> favoriteList;
+
     //Attribute
     AlertDialog.Builder builder;
-    MyAdapter myAdapter;
+    FavoriteAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
 
-        //create a favorite list
-        favoriteList = new ArrayList<>();
-        for (int i = 0; i < DB.contactList.size(); i++) {
-            if (DB.contactList.get(i).getFavorito()) {
-                favoriteList.add(DB.contactList.get(i));
-            }
-        }
+
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        myAdapter = new MyAdapter(this, favoriteList);
+        ArrayList<String> menuBar = new ArrayList<>();
+
+        menuBar.add("CALL");
+        menuBar.add("SMS");
+        menuBar.add("REMOVE");
+
+
+
+        myAdapter = new FavoriteAdapter(this, loadFavorites(),menuBar);
+
 
         //Recycler View configuration
         RecyclerView recyclerView = findViewById(R.id.recyclerView2);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(myAdapter);
-    }
 
+
+    }
 
     //inflate de menu
     @Override
@@ -86,17 +91,24 @@ public class Favorites extends AppCompatActivity {
                 displayToast("SENDING ....");
                 return true;
             case 124:
-                displayToast("REMOVED FROM FAVORITE");
-                return true;
-            case 125:
                 builder = new AlertDialog.Builder(this);
                 builder.setTitle("alert").setMessage("Do you want o delete this contact!")
                         .setCancelable(true).setPositiveButton("YES", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                displayToast("CONTACT REMOVED");
-                                myAdapter.removeItem(item.getGroupId());
-                                recreate();
+
+
+                                MyListData myListData=  favoriteList.get(item.getGroupId());
+                                for(int j = 0;j<DB.contactList.size();j++){
+                                    MyListData contact = DB.contactList.get(j);
+                                    if(myListData.getEmail() == contact.getEmail()){
+                                        DB.contactList.remove(j);
+                                    }
+                                }
+                                favoriteList.remove(item.getGroupId());
+                                displayToast("CONTACT REMOVED" + myListData.getEmail());
+                                myAdapter.notifyDataSetChanged();
+;
 
                             }
                         }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -106,9 +118,6 @@ public class Favorites extends AppCompatActivity {
                             }
                         })
                         .show();
-                return true;
-            case 126:
-                displayToast("SHARING ....");
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -120,5 +129,16 @@ public class Favorites extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), message,
                 Toast.LENGTH_SHORT).show();
 
+    }
+
+    private ArrayList<MyListData> loadFavorites(){
+        //create a favorite list
+        favoriteList = new ArrayList<>();
+        for (int i = 0; i < DB.contactList.size(); i++) {
+            if (DB.contactList.get(i).getFavorito()) {
+                favoriteList.add(DB.contactList.get(i));
+            }
+        }
+        return favoriteList;
     }
 }

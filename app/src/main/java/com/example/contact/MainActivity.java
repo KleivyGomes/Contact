@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     //Attribute
-    MyAdapter myAdapter = new MyAdapter(this, DB.contactList);
+    MyAdapter myAdapter;
     AlertDialog.Builder builder;
     RecyclerView recyclerView;
 
@@ -32,6 +32,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ArrayList<String> menuBar = new ArrayList<>();
+
+        menuBar.add("CALL");
+        menuBar.add("SMS");
+        menuBar.add("FAVORITE");
+        menuBar.add("REMOVE");
+        menuBar.add("SHARE");
+
+        myAdapter = new MyAdapter(this, DB.contactList,menuBar);
 
         //FloatingActionButton View
         FloatingActionButton fab = findViewById(R.id.add_contact);
@@ -49,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(myAdapter);
+
 
     }
 
@@ -93,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case 124:
                 displayToast("ADDED TO FAVORITE");
+                DB.contactList.get(item.getGroupId()).setFavorito(true);
+                myAdapter.notifyDataSetChanged();
                 return true;
             case 125:
                 builder = new AlertDialog.Builder(this);
@@ -100,9 +113,10 @@ public class MainActivity extends AppCompatActivity {
                         .setCancelable(true).setPositiveButton("YES", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                displayToast("CONTACT REMOVED");
-                                myAdapter.removeItem(item.getGroupId());
-                                recreate();
+                                displayToast("CONTACT REMOVED" + item.getGroupId());
+
+                                DB.contactList.remove(item.getGroupId());
+                                myAdapter.notifyDataSetChanged();
 
                             }
                         }).setNegativeButton("NO", new DialogInterface.OnClickListener() {

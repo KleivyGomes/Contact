@@ -20,14 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHolder> {
     //Attributes
     Context context;
     ArrayList<MyListData> myListData;
     ArrayList<String> menuContext;
 
     //constructor
-    public MyAdapter(Context context, ArrayList<MyListData> myListData,ArrayList<String> menu) {
+    public FavoriteAdapter(Context context, ArrayList<MyListData> myListData,ArrayList<String> menu) {
         this.context = context;
         this.myListData = myListData;
         this.menuContext = menu;
@@ -36,7 +36,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     //inflate a single_item
     @NonNull
     @Override
-    public MyAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FavoriteAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.single_item, parent, false);
 
         return new ViewHolder(view);
@@ -44,7 +44,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     //Setting the single_item views
     @Override
-    public void onBindViewHolder(@NonNull MyAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FavoriteAdapter.ViewHolder holder, int position) {
         holder.name.setText(myListData.get(position).getName());
         holder.phone.setText(myListData.get(position).getPhone());
         holder.imageView.setImageResource(R.drawable.perfil);
@@ -57,7 +57,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View view) {
-                changeFavoriteStatus(holder);
+                for (int n=0;n<DB.contactList.size();n++){
+                    if(myListData.get(holder.getAdapterPosition()).getEmail()==DB.contactList.get(n).getEmail()){
+                        DB.contactList.get(n).setFavorito(false);
+                    };
+                }
+                myListData.remove(holder.getAdapterPosition());
+                notifyDataSetChanged();
             }
         });
         holder.item.setOnClickListener(new View.OnClickListener() {
@@ -71,16 +77,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         });
     }
 
-    public void changeFavoriteStatus(@NonNull MyAdapter.ViewHolder holder){
-        if (myListData.get(holder.getAdapterPosition()).getFavorito()) {
-            myListData.get(holder.getAdapterPosition()).setFavorito(false);
-            holder.favorite.setImageResource(R.drawable.ic_baseline_star_outline_24);
 
-        } else {
-            myListData.get(holder.getAdapterPosition()).setFavorito(true);
-            holder.favorite.setImageResource(R.drawable.favorito);
-        }
-    }
 
     //DB size
     @Override
